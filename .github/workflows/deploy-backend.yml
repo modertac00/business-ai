@@ -1,0 +1,46 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'docker-compose.prod.yml'
+      - 'nginx/**'
+      - 'scripts/**'
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/business-ai
+
+            echo "Pulling latest code..."
+            git pull origin main
+
+            echo "Writing production .env..."
+            cat > .env <<EOF
+            POSTGRES_USER=postgres
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_DB=business_ai
+            EOF
+
+            echo "Rebuilding and restarting containers..."
+            docker compose -f docker-compose.prod.yml up -d --build
+
+            echo "Cleaning up unused Docker resources..."
+            docker system prune -f
+
+            echo "Deploy complete."

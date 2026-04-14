@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "setup": "sh scripts/setup-env.sh",
-    "postinstall": "sh scripts/setup-env.sh",
+    "postinstall": "sh scripts/setup-env.sh && npm run db:generate -w backend",
     "dev": "npm run setup && concurrently \"npm run dev -w frontend\" \"npm run start:dev -w backend\"",
     "dev:frontend": "npm run dev -w frontend",
     "dev:backend": "npm run setup && npm run start:dev -w backend",
