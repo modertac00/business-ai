@@ -1,0 +1,32 @@
+{
+  "name": "business-ai",
+  "private": true,
+  "version": "0.0.1",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "setup": "sh scripts/setup-env.sh",
+    "postinstall": "sh scripts/setup-env.sh",
+    "dev": "npm run setup && concurrently \"npm run dev -w frontend\" \"npm run start:dev -w backend\"",
+    "dev:frontend": "npm run dev -w frontend",
+    "dev:backend": "npm run setup && npm run start:dev -w backend",
+    "build": "npm run build -w frontend && npm run build -w backend",
+    "build:frontend": "npm run build -w frontend",
+    "build:backend": "npm run build -w backend",
+    "docker:up": "docker compose -f docker-compose.prod.yml up -d --build",
+    "docker:down": "docker compose -f docker-compose.prod.yml down",
+    "docker:logs": "docker compose -f docker-compose.prod.yml logs -f",
+    "docker:logs:backend": "docker compose -f docker-compose.prod.yml logs -f backend",
+    "docker:logs:frontend": "docker compose -f docker-compose.prod.yml logs -f nginx",
+    "docker:backend": "docker compose -f docker-compose.prod.yml up -d --build postgres backend",
+    "docker:frontend": "docker compose -f docker-compose.prod.yml up -d --build nginx",
+    "docker:restart:backend": "docker compose -f docker-compose.prod.yml restart backend",
+    "docker:restart:frontend": "docker compose -f docker-compose.prod.yml restart nginx",
+    "docker:db": "docker compose up -d"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

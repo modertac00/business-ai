@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Folder {
+  id        String     @id @default(cuid())
+  name      String
+  documents Document[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Document {
+  id       String  @id @default(cuid())
+  name     String
+  type     DocType @default(doc)
+  status   DocStatus @default(empty)
+
+  folderId String
+  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  sections Section[]
+  messages ChatMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Section {
+  id      String        @id @default(cuid())
+  number  String
+  title   String
+  content String        @default("") @db.Text
+  status  SectionStatus @default(empty)
+  order   Int
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ChatMessage {
+  id               String      @id @default(cuid())
+  role             MessageRole
+  text             String      @db.Text
+  chips            Json?
+  sectionIndicator String?
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+enum DocType {
+  doc
+  template
+}
+
+enum DocStatus {
+  done
+  draft
+  empty
+}
+
+enum SectionStatus {
+  done
+  writing
+  empty
+}
+
+enum MessageRole {
+  user
+  ai
+}
