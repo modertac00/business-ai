@@ -228,6 +228,48 @@ git pull
 npm run docker:up   # rebuilds changed images and restarts affected containers
 ```
 
+### Subdomain + CloudFront + S3 (Static Frontend)
+
+If you already have an S3 bucket and want to serve the frontend from a subdomain (for example, `app.example.com`) behind CloudFront:
+
+**Prerequisites**
+
+- AWS CLI configured (`aws configure`)
+- Existing S3 bucket (for static files)
+- Route53 hosted zone ID for your domain
+- ACM certificate in `us-east-1` that includes your subdomain
+
+**1. Create/attach CloudFront + DNS to subdomain**
+
+```bash
+npm run aws:cloudfront:setup -- \
+  --subdomain app.example.com \
+  --bucket your-existing-bucket \
+  --hosted-zone-id Z1234567890ABC \
+  --acm-cert-arn arn:aws:acm:us-east-1:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+```
+
+This command:
+
+- Creates (or reuses) a CloudFront Origin Access Control (OAC)
+- Creates (or reuses) a CloudFront distribution for your subdomain
+- Applies an S3 bucket policy allowing CloudFront read access
+- Upserts Route53 `A` + `AAAA` alias records to CloudFront
+
+**2. Build and sync frontend to S3**
+
+```bash
+npm run aws:s3:sync -- \
+  --bucket your-existing-bucket \
+  --distribution-id E123ABC456XYZ
+```
+
+Optional:
+
+- `--skip-build` to upload an already-built `frontend/dist`
+- `--build-dir <path>` for a custom build output directory
+- `--profile <aws-profile>` to use a non-default AWS CLI profile
+
 ### Architecture on EC2
 
 ```

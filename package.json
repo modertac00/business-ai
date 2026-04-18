@@ -24,7 +24,9 @@
     "docker:frontend": "docker compose -f docker-compose.prod.yml up -d --build nginx",
     "docker:restart:backend": "docker compose -f docker-compose.prod.yml restart backend",
     "docker:restart:frontend": "docker compose -f docker-compose.prod.yml restart nginx",
-    "docker:db": "docker compose up -d"
+    "docker:db": "docker compose up -d",
+    "aws:cloudfront:setup": "bash scripts/configure-cloudfront-subdomain.sh",
+    "aws:s3:sync": "bash scripts/sync-s3.sh"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
