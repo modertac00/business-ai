@@ -25,10 +25,9 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        working-directory: frontend
         run: |
-          rm -f package-lock.json
-          npm install --ignore-scripts
+          rm -f package-lock.json frontend/package-lock.json
+          npm install
 
       - name: Build frontend
         working-directory: frontend
