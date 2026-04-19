@@ -23,8 +23,7 @@ ENV NODE_ENV=production
 # Install production dependencies only
 COPY package*.json ./
 COPY backend/package*.json ./backend/
-COPY scripts/ ./scripts/
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --ignore-scripts
 
 # Copy compiled output and Prisma artifacts
 COPY --from=builder /app/backend/dist        ./backend/dist
