@@ -14,8 +14,8 @@ const STATUS_COLOR: Record<string, string> = {
   empty: '#B4B2A9',
 }
 
-export default function FolderItem({ folder, activeFileId, onSelectFile }: Props) {
-  const [open, setOpen] = useState(folder.id === 'moderta')
+export default function FolderItem({ folder, activeFileId, onSelectFile }: Readonly<Props>) {
+  const [open, setOpen] = useState(true)
 
   return (
     <div className={styles.folder}>

@@ -8,11 +8,11 @@ import './styles/globals.css'
 
 export default function App() {
   const {
-    folders, activeFileId, setActiveFileId,
+    folders, activeFileId, loading,
+    setActiveFileId, addFolder,
     docTitle, setDocTitle,
     sections, addSection, updateSection,
     messages, input, setInput, sendMessage,
-    addFolder,
   } = useDocStore()
 
   return (
@@ -25,6 +25,7 @@ export default function App() {
         onSelectFile={setActiveFileId}
         onAddFolder={addFolder}
         onNewDoc={addSection}
+        loading={loading}
       />
 
       <Editor

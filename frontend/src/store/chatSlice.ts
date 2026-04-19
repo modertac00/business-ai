@@ -1,15 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { ChatMessage } from '../types'
-import { INITIAL_MESSAGES } from '../data/mockData'
 
 interface ChatState {
-  messages: ChatMessage[]
   input: string
+  localMessages: ChatMessage[]
 }
 
 const initialState: ChatState = {
-  messages: INITIAL_MESSAGES,
   input: '',
+  localMessages: [],
 }
 
 const chatSlice = createSlice({
@@ -19,12 +18,14 @@ const chatSlice = createSlice({
     setInput(state, action: PayloadAction<string>) {
       state.input = action.payload
     },
-    addMessage(state, action: PayloadAction<ChatMessage>) {
-      state.messages.push(action.payload)
+    addLocalMessage(state, action: PayloadAction<ChatMessage>) {
+      state.localMessages.push(action.payload)
+    },
+    clearLocalMessages(state) {
+      state.localMessages = []
     },
   },
 })
 
-export const { setInput, addMessage } = chatSlice.actions
-
+export const { setInput, addLocalMessage, clearLocalMessages } = chatSlice.actions
 export default chatSlice.reducer

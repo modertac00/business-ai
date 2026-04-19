@@ -8,9 +8,10 @@ interface Props {
   onSelectFile: (id: string) => void
   onAddFolder: () => void
   onNewDoc: () => void
+  loading?: boolean
 }
 
-export default function Sidebar({ folders, activeFileId, onSelectFile, onAddFolder, onNewDoc }: Props) {
+export default function Sidebar({ folders, activeFileId, onSelectFile, onAddFolder, onNewDoc, loading }: Readonly<Props>) {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.header}>
@@ -19,6 +20,7 @@ export default function Sidebar({ folders, activeFileId, onSelectFile, onAddFold
       </div>
 
       <div className={styles.tree}>
+        {loading && <span className={styles.loading}>Loading…</span>}
         {folders.map((folder) => (
           <FolderItem
             key={folder.id}

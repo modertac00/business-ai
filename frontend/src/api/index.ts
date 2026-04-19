@@ -1,0 +1,16 @@
+export {
+  useGetFoldersQuery,
+  useCreateFolderMutation,
+  useUpdateFolderMutation,
+  useDeleteFolderMutation,
+  useGetDocumentQuery,
+  useCreateDocumentMutation,
+  useUpdateDocumentMutation,
+  useDeleteDocumentMutation,
+  useCreateSectionMutation,
+  useUpdateSectionMutation,
+  useDeleteSectionMutation,
+  useGetMessagesQuery,
+  useSendMessageMutation,
+  useClearMessagesMutation,
+} from './base-slice'
