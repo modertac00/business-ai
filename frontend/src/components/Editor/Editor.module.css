@@ -5,6 +5,19 @@
   overflow: hidden;
 }
 
+.emptyState {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyStateText {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: #aaa;
+}
+
 .editorTopbar {
   padding: 10px 16px;
   display: flex;

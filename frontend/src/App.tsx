@@ -9,7 +9,7 @@ import './styles/globals.css'
 export default function App() {
   const {
     folders, activeFileId, loading,
-    setActiveFileId, addFolder,
+    setActiveFileId, addFolder, addDocument,
     docTitle, setDocTitle,
     sections, addSection, updateSection,
     messages, input, setInput, sendMessage,
@@ -24,13 +24,14 @@ export default function App() {
         activeFileId={activeFileId}
         onSelectFile={setActiveFileId}
         onAddFolder={addFolder}
-        onNewDoc={addSection}
+        onAddDocument={addDocument}
         loading={loading}
       />
 
       <Editor
         title={docTitle}
         sections={sections}
+        activeDocumentId={activeFileId}
         onTitleChange={setDocTitle}
         onUpdateSection={updateSection}
         onAddSection={addSection}

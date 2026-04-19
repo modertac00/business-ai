@@ -5,12 +5,30 @@ import styles from './Editor.module.css'
 interface Props {
   title: string
   sections: DocSection[]
+  activeDocumentId: string
   onTitleChange: (t: string) => void
   onUpdateSection: (id: string, content: string) => void
   onAddSection: () => void
 }
 
-export default function Editor({ title, sections, onTitleChange, onUpdateSection, onAddSection }: Props) {
+export default function Editor({
+  title,
+  sections,
+  activeDocumentId,
+  onTitleChange,
+  onUpdateSection,
+  onAddSection,
+}: Readonly<Props>) {
+  if (!activeDocumentId) {
+    return (
+      <main className={styles.editor}>
+        <div className={styles.emptyState}>
+          <p className={styles.emptyStateText}>Select a document from the sidebar to get started</p>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className={styles.editor}>
       <div className={styles.editorTopbar}>

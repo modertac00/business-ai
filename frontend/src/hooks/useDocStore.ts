@@ -106,8 +106,8 @@ export function useDocStore() {
     updateSection: handleUpdateSection,
     sendMessage: handleSendMessage,
     setInput: (value: string) => dispatch(setInput(value)),
-    addFolder: () => createFolderMutation({ name: 'New Folder' }),
-    addDocument: (folderId: string) =>
-      createDocumentMutation({ folderId, name: 'Untitled Document' }),
+    addFolder: (name: string) => createFolderMutation({ name }),
+    addDocument: (folderId: string, name: string) =>
+      createDocumentMutation({ folderId, name }),
   }
 }
