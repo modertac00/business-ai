@@ -1,46 +1,38 @@
 name: Deploy Backend
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
+      - '.github/workflows/deploy-backend.yml'
       - 'backend/**'
-      - 'docker-compose.prod.yml'
-      - 'nginx/**'
-      - 'scripts/**'
+      - 'docker-compose.ec2.yml'
 
 jobs:
   deploy:
-    name: Deploy to EC2
+    name: Deploy to EC2 via SSM
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy to EC2 via SSH
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd ~/business-ai
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-            echo "Pulling latest code..."
-            git pull origin main
-
-            echo "Writing production .env..."
-            cat > .env <<EOF
-            POSTGRES_USER=postgres
-            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            POSTGRES_DB=business_ai
-            EOF
-
-            echo "Rebuilding and restarting containers..."
-            docker compose -f docker-compose.prod.yml up -d --build
-
-            echo "Cleaning up unused Docker resources..."
-            docker system prune -f
-
-            echo "Deploy complete."
+      - name: Deploy via SSM
+        run: |
+          aws ssm send-command \
+            --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --parameters 'commands=[
+              "cd /home/ubuntu/business-ai",
+              "cat > .env <<EOF\nPOSTGRES_USER=postgres\nPOSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}\nPOSTGRES_DB=business_ai\nFRONTEND_URL=${{ secrets.FRONTEND_URL }}\nEOF",
+              "git pull origin main",
+              "docker compose -f docker-compose.ec2.yml up -d --build",
+              "docker image prune -f"
+            ]' \
+            --output text \
+            --query "Command.CommandId"
