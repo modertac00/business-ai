@@ -7,7 +7,7 @@ COPY package*.json ./
 COPY backend/package*.json ./backend/
 COPY scripts/ ./scripts/
 
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 # Copy backend source
 COPY backend/ ./backend/
