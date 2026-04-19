@@ -5,6 +5,7 @@ WORKDIR /app
 # Copy workspace manifests first (layer cache)
 COPY package*.json ./
 COPY backend/package*.json ./backend/
+COPY scripts/ ./scripts/
 
 RUN npm ci
 
@@ -22,6 +23,7 @@ ENV NODE_ENV=production
 # Install production dependencies only
 COPY package*.json ./
 COPY backend/package*.json ./backend/
+COPY scripts/ ./scripts/
 RUN npm ci --omit=dev
 
 # Copy compiled output and Prisma artifacts
