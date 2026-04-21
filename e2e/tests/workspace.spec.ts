@@ -7,14 +7,28 @@ test.describe('Workspace management', () => {
     await page.goto('/')
 
     await page.click('[title="New workspace"]')
-
     await expect(page.getByText('New Workspace')).toBeVisible()
+
     await page.fill('input[placeholder="e.g. Moderta ESG"]', name)
     await page.click('button:has-text("Create")')
 
     await expect(page.getByText(name)).toBeVisible()
 
-    // cleanup
+    const folders = await (await request.get('http://localhost:3002/api/folders')).json()
+    const created = folders.find((f: any) => f.name === name)
+    if (created) await deleteFolder(request, created.id)
+  })
+
+  test('creates workspace with Enter key', async ({ page, request }) => {
+    const name = uniqueName('Workspace')
+    await page.goto('/')
+
+    await page.click('[title="New workspace"]')
+    await page.fill('input[placeholder="e.g. Moderta ESG"]', name)
+    await page.keyboard.press('Enter')
+
+    await expect(page.getByText(name)).toBeVisible()
+
     const folders = await (await request.get('http://localhost:3002/api/folders')).json()
     const created = folders.find((f: any) => f.name === name)
     if (created) await deleteFolder(request, created.id)
@@ -30,10 +44,28 @@ test.describe('Workspace management', () => {
     await expect(page.getByText('Should Not Exist')).not.toBeVisible()
   })
 
-  test('Create button disabled when name is empty', async ({ page }) => {
+  test('Escape key closes modal without creating', async ({ page }) => {
     await page.goto('/')
 
     await page.click('[title="New workspace"]')
+    await page.fill('input[placeholder="e.g. Moderta ESG"]', 'Will Not Exist')
+    await page.keyboard.press('Escape')
+
+    await expect(page.getByText('Will Not Exist')).not.toBeVisible()
+  })
+
+  test('Create button is disabled when name is empty', async ({ page }) => {
+    await page.goto('/')
+
+    await page.click('[title="New workspace"]')
+    await expect(page.locator('button:has-text("Create")')).toBeDisabled()
+  })
+
+  test('Create button is disabled when name is only spaces', async ({ page }) => {
+    await page.goto('/')
+
+    await page.click('[title="New workspace"]')
+    await page.fill('input[placeholder="e.g. Moderta ESG"]', '   ')
     await expect(page.locator('button:has-text("Create")')).toBeDisabled()
   })
 
@@ -47,7 +79,7 @@ test.describe('Workspace management', () => {
     await expect(page.getByText('New Workspace')).not.toBeVisible()
   })
 
-  test('workspace folder is shown expanded in sidebar', async ({ page, request }) => {
+  test('workspace appears in sidebar after creation', async ({ page, request }) => {
     const name = uniqueName('Folder')
     await page.goto('/')
 
@@ -57,7 +89,6 @@ test.describe('Workspace management', () => {
 
     await expect(page.getByText(name)).toBeVisible()
 
-    // cleanup
     const folders = await (await request.get('http://localhost:3002/api/folders')).json()
     const created = folders.find((f: any) => f.name === name)
     if (created) await deleteFolder(request, created.id)

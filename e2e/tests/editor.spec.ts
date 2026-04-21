@@ -3,15 +3,13 @@ import { createFolder, createDocument, deleteFolder, uniqueName } from '../helpe
 
 test.describe('Editor — sections', () => {
   let folderId: string
-  let documentId: string
   let docName: string
 
   test.beforeEach(async ({ page, request }) => {
     const folder = await createFolder(request, uniqueName('Folder'))
     folderId = folder.id
     docName = uniqueName('Doc')
-    const doc = await createDocument(request, folderId, docName)
-    documentId = doc.id
+    await createDocument(request, folderId, docName)
 
     await page.goto('/')
     await expect(page.getByText(folder.name)).toBeVisible()
@@ -30,6 +28,14 @@ test.describe('Editor — sections', () => {
     await expect(page.getByText('empty')).toBeVisible()
   })
 
+  test('new section shows write/generate button', async ({ page }) => {
+    await page.click('button:has-text("+ add section")')
+
+    await expect(
+      page.locator('button:has-text("+ write manually or generate with AI")'),
+    ).toBeVisible()
+  })
+
   test('adds multiple sections with incrementing numbers', async ({ page }) => {
     await page.click('button:has-text("+ add section")')
     await page.click('button:has-text("+ add section")')
@@ -40,7 +46,6 @@ test.describe('Editor — sections', () => {
 
   test('can write content in a section manually', async ({ page }) => {
     await page.click('button:has-text("+ add section")')
-
     await page.click('button:has-text("+ write manually or generate with AI")')
     await page.fill('textarea', 'This is test content for the section.')
     await page.click('button:has-text("Save")')
@@ -49,14 +54,14 @@ test.describe('Editor — sections', () => {
     await expect(page.getByText('done')).toBeVisible()
   })
 
-  test('can cancel editing a section', async ({ page }) => {
+  test('can cancel editing a section without saving', async ({ page }) => {
     await page.click('button:has-text("+ add section")')
-
     await page.click('button:has-text("+ write manually or generate with AI")')
     await page.fill('textarea', 'Unsaved content')
     await page.click('button:has-text("Cancel")')
 
     await expect(page.getByText('Unsaved content')).not.toBeVisible()
+    await expect(page.getByText('empty')).toBeVisible()
   })
 
   test('section shows edit button after content is saved', async ({ page }) => {
@@ -66,5 +71,48 @@ test.describe('Editor — sections', () => {
     await page.click('button:has-text("Save")')
 
     await expect(page.locator('button:has-text("✎ edit this section")')).toBeVisible()
+  })
+
+  test('can edit an already saved section', async ({ page }) => {
+    await page.click('button:has-text("+ add section")')
+    await page.click('button:has-text("+ write manually or generate with AI")')
+    await page.fill('textarea', 'Original content')
+    await page.click('button:has-text("Save")')
+
+    await page.click('button:has-text("✎ edit this section")')
+    await page.fill('textarea', 'Updated content')
+    await page.click('button:has-text("Save")')
+
+    await expect(page.getByText('Updated content')).toBeVisible()
+    await expect(page.getByText('Original content')).not.toBeVisible()
+  })
+
+  test('section status changes from empty to done after saving', async ({ page }) => {
+    await page.click('button:has-text("+ add section")')
+    await expect(page.getByText('empty')).toBeVisible()
+
+    await page.click('button:has-text("+ write manually or generate with AI")')
+    await page.fill('textarea', 'Content here')
+    await page.click('button:has-text("Save")')
+
+    await expect(page.getByText('done')).toBeVisible()
+    await expect(page.getByText('empty')).not.toBeVisible()
+  })
+
+  test('can add multiple sections and write content in each', async ({ page }) => {
+    await page.click('button:has-text("+ add section")')
+    await page.click('button:has-text("+ add section")')
+
+    const writeButtons = page.locator('button:has-text("+ write manually or generate with AI")')
+    await writeButtons.first().click()
+    await page.fill('textarea', 'Section one content')
+    await page.click('button:has-text("Save")')
+
+    await writeButtons.last().click()
+    await page.fill('textarea', 'Section two content')
+    await page.click('button:has-text("Save")')
+
+    await expect(page.getByText('Section one content')).toBeVisible()
+    await expect(page.getByText('Section two content')).toBeVisible()
   })
 })
