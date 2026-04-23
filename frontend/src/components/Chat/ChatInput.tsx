@@ -3,12 +3,13 @@ import { QUICK_PROMPTS } from '../../data/mockData'
 import styles from './Chat.module.css'
 
 interface Props {
-  value: string
-  onChange: (v: string) => void
-  onSend: (text: string) => void
+  readonly value: string
+  readonly disabled?: boolean
+  readonly onChange: (v: string) => void
+  readonly onSend: (text: string) => void
 }
 
-export default function ChatInput({ value, onChange, onSend }: Props) {
+export default function ChatInput({ value, disabled = false, onChange, onSend }: Props) {
   const ref = useRef<HTMLTextAreaElement>(null)
 
   function handleKey(e: React.KeyboardEvent) {
@@ -34,10 +35,11 @@ export default function ChatInput({ value, onChange, onSend }: Props) {
           placeholder="Ask AI to write, edit, or restructure…"
           rows={1}
           value={value}
+          disabled={disabled}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKey}
         />
-        <button className={styles.sendBtn} onClick={() => onSend(value)}>↑</button>
+        <button className={styles.sendBtn} onClick={() => onSend(value)} disabled={disabled}>↑</button>
       </div>
     </div>
   )

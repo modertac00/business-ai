@@ -12,7 +12,7 @@ export default function App() {
     setActiveFileId, addFolder, addDocument,
     docTitle, setDocTitle,
     sections, addSection, updateSection,
-    messages, input, setInput, sendMessage,
+    messages, input, setInput, sendMessage, sending,
   } = useDocStore()
 
   return (
@@ -41,6 +41,7 @@ export default function App() {
         messages={messages}
         docTitle={docTitle}
         input={input}
+        sending={sending}
         onInputChange={setInput}
         onSend={sendMessage}
       />

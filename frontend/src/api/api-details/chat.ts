@@ -1,4 +1,4 @@
-import { transformMessage, transformMessages } from '../handle-transformation'
+import { transformSendMessageResponse, transformMessages } from '../handle-transformation'
 
 export const chatMutations = {
   sendMessage: {
@@ -6,7 +6,7 @@ export const chatMutations = {
       `/api/documents/${documentId}/chat/messages`,
     getBody: ({ text }: { documentId: string; text: string }) => ({ text }),
     method: 'POST',
-    transformResponse: transformMessage,
+    transformResponse: transformSendMessageResponse,
     invalidatesTags: ['MESSAGES'],
   },
   clearMessages: {

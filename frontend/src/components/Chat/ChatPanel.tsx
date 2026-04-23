@@ -5,19 +5,20 @@ import ChatInput from './ChatInput'
 import styles from './Chat.module.css'
 
 interface Props {
-  messages: ChatMessage[]
-  docTitle: string
-  input: string
-  onInputChange: (v: string) => void
-  onSend: (text: string) => void
+  readonly messages: ChatMessage[]
+  readonly docTitle: string
+  readonly input: string
+  readonly sending: boolean
+  readonly onInputChange: (v: string) => void
+  readonly onSend: (text: string) => void
 }
 
-export default function ChatPanel({ messages, docTitle, input, onInputChange, onSend }: Props) {
+export default function ChatPanel({ messages, docTitle, input, sending, onInputChange, onSend }: Props) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  }, [messages, sending])
 
   return (
     <aside className={styles.panel}>
@@ -30,10 +31,18 @@ export default function ChatPanel({ messages, docTitle, input, onInputChange, on
         {messages.map((msg) => (
           <MessageBubble key={msg.id} message={msg} onChipClick={onSend} />
         ))}
+        {sending && (
+          <div className={`${styles.msg} ${styles.ai}`}>
+            <div className={`${styles.avatar} ${styles.avatarAI}`}>AI</div>
+            <div className={styles.msgContent}>
+              <div className={styles.bubble}>Thinking…</div>
+            </div>
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
 
-      <ChatInput value={input} onChange={onInputChange} onSend={onSend} />
+      <ChatInput value={input} onChange={onInputChange} onSend={onSend} disabled={sending} />
     </aside>
   )
 }

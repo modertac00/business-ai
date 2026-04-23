@@ -44,3 +44,11 @@ export const transformMessage = (m: ApiChatMessage): ChatMessage => ({
 
 export const transformMessages = (msgs: ApiChatMessage[]): ChatMessage[] =>
   msgs.map(transformMessage)
+
+export const transformSendMessageResponse = (res: {
+  userMessage: ApiChatMessage
+  aiMessage: ApiChatMessage
+}): { userMessage: ChatMessage; aiMessage: ChatMessage } => ({
+  userMessage: transformMessage(res.userMessage),
+  aiMessage: transformMessage(res.aiMessage),
+})

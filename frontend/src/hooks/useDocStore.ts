@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setActiveDocument } from '../store/uiSlice'
-import { setInput, addLocalMessage, clearLocalMessages } from '../store/chatSlice'
+import { setInput, clearLocalMessages } from '../store/chatSlice'
 import {
   useGetFoldersQuery,
   useGetDocumentQuery,
@@ -57,18 +57,7 @@ export function useDocStore() {
     (text: string) => {
       if (!text.trim() || !activeDocumentId) return
       dispatch(setInput(''))
-      sendMessageMutation({ documentId: activeDocumentId, text }).then(() => {
-        setTimeout(() => {
-          dispatch(
-            addLocalMessage({
-              id: Date.now().toString(),
-              role: 'ai',
-              text: 'Got it — working on that now.',
-              chips: ['Continue', 'Revise', 'Skip'],
-            }),
-          )
-        }, 800)
-      })
+      sendMessageMutation({ documentId: activeDocumentId, text })
     },
     [dispatch, activeDocumentId, sendMessageMutation],
   )
